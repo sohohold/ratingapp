@@ -1,0 +1,109 @@
+{% extends "application.html" %}
+{% block title %}Top{% endblock %}
+{% block content %}
+
+<header>
+    <ul>
+        <li><a href="{% url 'ratingapp:about' %}">概要</a></li>
+        <li><a href="{% url 'ratingapp:recently' %}">最近の評価</a></li>
+    </ul>
+</header>
+<div id="token" style="display:none;">{{initial_token}}</div>
+<div class="mrg"></div>
+<div class="container">
+    <div class="main">
+        <h1><a href="">Twitterイラスト評価</a></h1>
+        <div class="main-input">
+            <form id="tweet-form" method="POST"> {% csrf_token %}
+                <input id="tweet-link" type="url" placeholder="Paste a tweet link" maxlength="255" pattern="https://twitter.com/.*" required>
+                <button type="button" id="reset"><i class="fas fa-times" aria-hidden="true"></i></button>
+                <input id="tweet-submit" type="submit" value="&#xf002;" class="fas btn">
+            </form>
+        </div>
+        <div id="success" class="mes" style="display:none;"></div>
+    </div>
+    <div class="modal js-modal">
+        <div class="modal__bg js-modal-close"></div>
+        <div class="modal__content">
+            <form id="select-form" method="POST"> {% csrf_token %}
+                <div class="img-result"></div>
+                <p><input class="image-select js-modal-close btn" type="submit" value="OK"></p>
+            </form>
+        </div><!--modal__inner-->
+    </div><!--modal-->
+</div>
+
+<div class="container">
+    <div id="include" style="display:none;">
+        <div class="top-contents">
+            <div id='fig'></div>
+            <div class="average">
+                <div id="averageChart"></div>
+                <div class="cover" style="display:none;"></div>
+                <h2>みんなの評価</h2>
+            </div>
+        </div>
+        <form id="rating" method="POST" action="{% url 'ratingapp:post' %}"> {% csrf_token %}
+        <div class="rating-bottom">
+            <div id="inputYours">
+                <p class="p1">キャラクターデザイン
+                    <span class="ex ex1">適切な記号的表現はそのキャラがもつ人相や個人史、社会背景を一挙に象徴させることができます。瞳の描き分けから服飾までしっかりと制御されていますか。クリエイターのオリジナリティ（＝作家性）が顕著になりやすい要素ですが、欲望が肥大化したデザインで共感を得ようとすれば、相応の技術を要するでしょう。俗にいう絵柄はこの項目です。</span>
+                </p>
+                <input type="range" id="inputcd" name="myRange" min="0" max="5" value="5" step="1" list="tickmarks">
+                <p><span id="outputcd">5</span></p>
+                <p class="p2">デッサン力
+                    <span class="ex ex2">解剖学的な正確さは数あるなかの一つの基準であって、それだけがデッサン力を決定するわけではありません。むしろ、キャラクターの洗練された統一性だと考えてみましょう。イラストは不自然なのが当然です。しかし、そこにどのような根拠・ロジックを提示できているかがこの項目で問われています。</span>
+                </p>
+                <input type="range" id="inputsa" name="myRange" min="0" max="5" value="5" step="1" list="tickmarks">
+                <p><span id="outputsa">5</span></p>
+                <p class="p3">構図・構成
+                    <span class="ex ex3">画面全体の統一性があるということはモノの重要性が序列化されている証拠です。注視点から周縁へ視線誘導される画面づくりがされていれば完成度は高く見えます。もしかしたら、単純な図形をベースにして動的／静的な構図を作り出すテクニックが隠されているかも。</span>
+                </p>
+                <input type="range" id="inputcmp" name="myRange" min="0" max="5" value="5" step="1" list="tickmarks">
+                <p><span id="outputcmp">5</span></p>
+                <p class="p4">色彩・配色
+                    <span class="ex ex4">原色・暖色・寒色・低コントラスト・モノクロ。アニメ調・厚塗り・水彩調などあった中で、このイラストが選択したモードが画題とマッチしているのか判断しましょう。</span>
+                </p>
+                <input type="range" id="inputhue" name="myRange" min="0" max="5" value="5" step="1" list="tickmarks">
+                <p><span id="outputhue">5</span></p>
+                <p class="p5">演出・フォトジェニック
+                    <span class="ex ex5">ライティング（照明技法）・広角レンズ・被写界深度・ノイズなど臨場感やリアリティを表現する演出はイラストの本来性から逸脱しうる欠点があります。新海誠には必要でしたが、アンパンマンには必要なく、そしてどちらも最適の演出だということです。</span>
+                </p>
+                <input type="range" id="inputedit" name="myRange" min="0" max="5" value="5" step="1" list="tickmarks">
+                <p><span id="outputedit">5</span></p>
+                <p class="p6">物語性・世界観
+                    <span class="ex ex6">白背景であってもキャラクターがカメラに目線が向いているかどうかで背後の文脈は大きく異なります。被写体の行為は何を意味するのか、表情と背景の結びつきに整合性はあるのか、単にトレンドを追った作品なのか……。</span>
+                </p>
+                <input type="range" id="inputnar" name="myRange" min="0" max="5" value="5" step="1" list="tickmarks">
+                <p><span id="outputnar">5</span></p>
+                <datalist id="tickmarks">
+                    <option value="0" label="0"></option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5" label="5">5</option>
+                </datalist>
+            </div>
+            <div class="main-chart">
+                <div id="mainChart"></div>
+            </div>
+        </div>
+        <div id="fail" class="mes" style="display:none;"></div>
+        <p><button class="modal-open btn" type="button">OK</button></p>
+        <div class="modal js-modal-2">
+            <div class="modal__bg js-modal-close-2"></div>
+            <div class="modal__content">
+                <ruby>
+                <rb>確認</rb>
+                <rp>（</rp><rt>Confirmation</rt><rp>）</rp>
+                </ruby>
+                <p><button class="js-modal-close-2 btn" type="button">BACK</button>
+                <input id="rating-submit" class="js-modal-close-2 btn" type="submit" value="OK"></p>
+            </div><!--modal__inner-->
+        </div><!--modal-->
+        </form>
+    </div>
+</div>
+
+{% endblock %}
