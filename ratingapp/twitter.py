@@ -4,6 +4,8 @@ import json
 from django.conf import settings
 
 bearer_token = settings.BEARER_TOKEN
+if bearer_token is None:
+    print('ENV load fail!')
 
 class LookupTweet:
     def __init__(self, tweetid):
@@ -23,5 +25,8 @@ class LookupTweet:
             r.headers["Authorization"] = f"Bearer {bearer_token}"
             r.headers["User-Agent"] = "v2TweetLookupPython"
             return r
-        response = requests.request("GET", url, auth=bearer_oauth)
-        return response.json()
+        try:
+            response = requests.request("GET", url, auth=bearer_oauth)
+            return response.json()
+        except Exception as e:
+            print(f'response fail: {e}')

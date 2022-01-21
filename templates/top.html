@@ -1,5 +1,5 @@
 {% extends "application.html" %}
-{% block title %}Top{% endblock %}
+{% block title %}Twitterイラスト評価{% endblock %}
 {% block content %}
 
 <header>
@@ -14,7 +14,7 @@
     <div class="main">
         <h1><a href="">Twitterイラスト評価</a></h1>
         <div class="main-input">
-            <form id="tweet-form" method="POST"> {% csrf_token %}
+            <form id="tweet-form" method="GET"> {% csrf_token %}
                 <input id="tweet-link" type="url" placeholder="Paste a tweet link" maxlength="255" pattern="https://twitter.com/.*" required>
                 <button type="button" id="reset"><i class="fas fa-times" aria-hidden="true"></i></button>
                 <input id="tweet-submit" type="submit" value="&#xf002;" class="fas btn">
@@ -25,7 +25,7 @@
     <div class="modal js-modal">
         <div class="modal__bg js-modal-close"></div>
         <div class="modal__content">
-            <form id="select-form" method="POST"> {% csrf_token %}
+            <form id="select-form" method="GET"> {% csrf_token %}
                 <div class="img-result"></div>
                 <p><input class="image-select js-modal-close btn" type="submit" value="OK"></p>
             </form>
@@ -43,7 +43,7 @@
                 <h2>みんなの評価</h2>
             </div>
         </div>
-        <form id="rating" method="POST" action="{% url 'ratingapp:post' %}"> {% csrf_token %}
+        <form id="rating" method="GET"> {% csrf_token %}
         <div class="rating-bottom">
             <div id="inputYours">
                 <p class="p1">キャラクターデザイン

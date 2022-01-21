@@ -12,24 +12,46 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 
-dotenv_path = os.path.join(BASE_DIR, '.env')
-load_dotenv(dotenv_path, verbose=True)
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY")
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG")
+DEBUG = os.getenv('DEBUG')
+
+# Twitter API v2
+BEARER_TOKEN = os.getenv('BEARER_TOKEN')
 
 ALLOWED_HOSTS = ['*']
 
+CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOWED_ORIGINS = [
+#     'https://illust-rating.com/',
+#     'illust-rating.com',
+# ]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_REPLACE_HTTPS_REFERER = False
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://illust-rating.com',
+    'https://*.illust-rating.com'
+    'https://*.127.0.0.1',
+    'https://*.twitter.com/',
+]
+CSRF_COOKIE_DOMAIN = '.illust-rating.com'
+CSRF_USE_SESSIONS = False
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SAMESITE = None
+
+SESSION_COOKIE_SAMESITE = None
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -38,12 +60,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'ratingapp',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -78,11 +102,11 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get("POSTGRES_NAME"),
-        'USER': os.environ.get("POSTGRES_USER"),
-        'PASSWORD' : os.environ.get("POSTGRES_PASSWORD"),
-        'HOST' : os.environ.get("POSTGRES_HOST"),
-        'PORT' : os.environ.get("POSTGRES_PORT"),
+        'NAME': os.getenv("POSTGRES_NAME"),
+        'USER': os.getenv("POSTGRES_USER"),
+        'PASSWORD' : os.getenv("POSTGRES_PASSWORD"),
+        'HOST' : os.getenv("POSTGRES_HOST"),
+        'PORT' : os.getenv("POSTGRES_PORT"),
     }
 }
 
@@ -132,5 +156,3 @@ STATICFILES_DIRS = ['ratingapp/static/']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-
-BEARER_TOKEN = os.environ.get("BEARER_TOKEN")

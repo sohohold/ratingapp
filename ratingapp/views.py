@@ -18,14 +18,19 @@ import uuid
 
 
 def top(request):
-    message = None
-    #ハッシュ値生成
+    # ハッシュ値生成
     initial_token = str(uuid.uuid4())
-    #セッションにトークンを格納
+    # セッションにトークンを格納
     request.session['initial_token'] = initial_token
+    # メッセージ取得
+    msg = request.GET.get('msg')
+    if msg == 200:
+        msg = '投稿しました Success!'
+    else:
+        msg = None
     return render(request, 'top.html', {
-        'message': message,
         'initial_token': initial_token,
+        'message': msg,
         })
 
 def get_from_rating(your_img):
@@ -38,7 +43,7 @@ def get_from_rating(your_img):
 
 def modify_tweet_link(request):
     # URL取得
-    url = request.POST.get('url')
+    url = request.GET.get('url')
     # URL validation
     if not url.startswith('https://twitter.com/'):
         d = { 'url': "false" }
@@ -102,7 +107,7 @@ def modify_tweet_link(request):
 
 def selected(request):
     d = {}
-    your_img = request.POST.get('img')    
+    your_img = request.GET.get('img')    
     try: # 既存データあり
         Image.objects.get(media_url=your_img)
         avg = get_from_rating(your_img) # 集計クエリ
@@ -113,28 +118,33 @@ def selected(request):
 
 def post_to_rating(request):
     # クライアントIPを取得
-    client_addr, _ = get_client_ip(request) 
+    client_addr, is_routable = get_client_ip(request)
+    if client_addr is not None:
+        # We got the client's IP address
+        if not is_routable:
+            # The client's IP address is private
+            client_addr = None
     # 送信されたトークンを取得
-    token_in_request = request.POST.get('initial_token') 
+    token_in_request = request.GET.get('initial_token') 
     # 一度使用したトークンだった場合セッションから破棄
     s = request.session.get('initial_token')
     print(f'session token: {s}')
     token_in_session = request.session.pop('initial_token', '')
-    if not token_in_request==token_in_session:
+    if not token_in_request == token_in_session:
         print(f'session mismatch: {token_in_request}//{token_in_session}')
         d = {'m': '更新してください Please reload!'}
         return JsonResponse(d)
-    url = request.POST.get('url')
-    your_img = request.POST.get('your_img')
-    author = request.POST.get('author_id')
-    name = request.POST.get('name')
-    username = request.POST.get('username')
-    cd = request.POST.get('cd')
-    sa = request.POST.get('sa')
-    cmp = request.POST.get('cmp')
-    hue = request.POST.get('hue')
-    edit = request.POST.get('edit')
-    nar = request.POST.get('nar')
+    url = request.GET.get('url')
+    your_img = request.GET.get('your_img')
+    author = request.GET.get('author_id')
+    name = request.GET.get('name')
+    username = request.GET.get('username')
+    cd = request.GET.get('cd')
+    sa = request.GET.get('sa')
+    cmp = request.GET.get('cmp')
+    hue = request.GET.get('hue')
+    edit = request.GET.get('edit')
+    nar = request.GET.get('nar')
     # save to DB
     try: 
         # ユーザー
@@ -166,7 +176,7 @@ def post_to_rating(request):
                 'session':token_in_request,
             },
         )
-        print(f'{obj_rt.user} created?: {created_rt}')
+        print(f'{obj_rt.user} rating created?: {created_rt}')
         # 連投の場合
         if not created_rt: 
             d = {'m': '複数投稿はできません You cannot post more than once.'}
@@ -179,19 +189,14 @@ def post_to_rating(request):
     # 同一セッション内登記をクリア
     try:
         ses = Rating.objects.filter(pk__in=list(Rating.objects.filter(session=token_in_request).order_by('-created_at')[1:].values_list('pk', flat=True)))
-        print([s.image.media_url for s in ses])
+        print(f'duplicating: {[s.image.media_url for s in ses]}')
         ses.delete()
     except Exception as e:
         print(f'deleting fail: {e}')
-
+        
     # 保存完了でリロード
-    initial_token = str(uuid.uuid4())
-    request.session['initial_token'] = initial_token
-    print(initial_token)
-    return render(request, 'top.html', {
-        'message': '投稿しました Success!',
-        'initial_token': initial_token,
-    })
+    d = {'m': 0}
+    return JsonResponse(d)
 
 
 class AboutView(TemplateView):
@@ -212,8 +217,8 @@ def recently(request):
     for r in recents:
         recent_imgs.append(r.media_url)
     
-    graphs = []
-    avgs = []
+    graphs = [] # チャート生成
+    avgs = [] # 平均値
     categories = ['キャラデザ','デッサン力','構図',
                 '色彩', '演出', '物語性']
     # 取得画像ごとにチャート生成

@@ -11,7 +11,7 @@ body {
 }
 
 h1 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     color: white;
 }
 h1 a {
@@ -120,7 +120,7 @@ input[type="url"]:focus {
 }
 #reset i {color: #657786;}
 
-/* ----------モーダル---------- */
+/* --------------------モーダル-------------------- */
 .modal {
     display: none;
     height: 100vh;
@@ -168,7 +168,7 @@ input[type=radio] {
     display: none;
 }
 
-/* ratingページ */
+/* --------------------評価-------------------- */
 .top-contents {
     display: flex;
     justify-content: space-evenly;
@@ -187,6 +187,22 @@ input[type=radio] {
     position: relative;
     right: 0;
     width: 50%;
+}
+@media screen and (max-width: 480px) {
+    .top-contents {
+    display: block;
+    align-items: center;
+    height: min(20%);
+    border: solid 1px #657786;
+    }
+    #fig {
+    width: 80%;
+    }
+    .average {
+    position: relative;
+    right: 0;
+    width: 90%;
+    }
 }
 .cover {
     display: inline-block;
@@ -273,7 +289,7 @@ input[type="range"]:active::-webkit-slider-thumb {
     box-shadow: 0 0 0 4px rgba(255, 255, 255, .6);
     transition: .4s;
 }
-/* 解説 */
+/* --------------------解説-------------------- */
 .ex {
     display: none;
     position: absolute;
@@ -308,7 +324,12 @@ ruby {
     color: white;
 }
 
-/* aboutページ */
+/* --------------------概要-------------------- */
+.div-about {
+    max-width: 1000px;
+    padding: 0 1%;
+    margin: 0 auto;
+}
 .div-about p {
     padding: 0px 20px;
     text-align: left;
@@ -325,7 +346,7 @@ ruby {
     background-color: #1da0f280;
 }
 
-/* recentlyページ */
+/* --------------------最近の評価-------------------- */
 #recently li {
     list-style: none;
     display: flex;
@@ -350,7 +371,7 @@ ruby {
     width: 50%;
 }
 
-/* リンク */
+/* --------------------リンク-------------------- */
 #fig a {
     color: #1880C6;
     text-decoration: none;

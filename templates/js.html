@@ -1,36 +1,5 @@
 {% load static %}
 <script>
-// csrftoken処理
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-var csrftoken = getCookie('csrftoken');
-
-function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-}
-
-$.ajaxSetup({
-    beforeSend: function (xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-    }
-});
 
 // plotly
 const categories = ['キャラデザ','デッサン力','構図',
@@ -76,102 +45,6 @@ function chart(avg) {
 
 // ajax
 
-// 画像選択以後
-function f_bottom(img, url, author_id, name, username, avg) {
-    $('#include').show();
-    $('#fail').hide();
-    let image = $('<p>', { html: `<a data-lightbox="select-img" href="${img}"><image src="${img}"></a>`});
-    let userinfo = $('<p>', { html: `<a href="${url}">${name}(@${username})</a>` });
-    $('#fig').empty();
-    $('#fig').append(image, userinfo);
-    chart(avg); // チャート描画
-    let isnull = avg.some((val, idx, obj) => {
-        console.log(`val=${val}, idx=${idx}, obj=${obj}`);
-        return val == null;
-    });
-    // 平均値0の場合チャート非表示
-    if (isnull) {
-        let cmes = $('<h3>', { html: '評価数が基準以下です<br>Not enough posts!'});
-        $('.cover').empty();
-        $('.cover').show();
-        $('.cover').append(cmes);
-    } else { $('.cover').hide(); }
-    $('[name="myRange"]').on('input', () => {
-        let cd = $('#inputcd').val();
-        let sa = $('#inputsa').val();
-        let cmp = $('#inputcmp').val();
-        let hue = $('#inputhue').val();
-        let edit = $('#inputedit').val();
-        let nar = $('#inputnar').val();
-        if (data.length == 1) {
-            data.push({
-                type: 'scatterpolar',
-                r: [cd,sa,cmp,hue,edit,nar],
-                theta: categories,
-                fill: 'toself',
-                name: 'あなたの評価'
-            });
-        } else {
-            data.pop();
-            data.push({
-                type: 'scatterpolar',
-                r: [cd,sa,cmp,hue,edit,nar],
-                theta: categories,
-                fill: 'toself',
-                name: 'あなたの評価'
-            });            
-        }
-        Plotly.react(mainchart, data, layout, config);
-    });
-    $(function(){ // 確認モーダル表示
-        $('.modal-open').on('click',function(){
-            $('.js-modal-2').fadeIn();
-            return false;
-        });
-        $('.js-modal-close-2').on('click',function(){
-            $('.js-modal-2').fadeOut();
-            return false;
-        });
-    });
-    var jqxhr;
-    $('#rating-submit').on('click', function(e) {
-        e.preventDefault();
-        console.log(jqxhr);
-        if (jqxhr) { return; } // 重複回避
-        jqxhr = $.ajax({ // 評価値をpost_to_ratingに渡す
-            'url': '{% url "ratingapp:post" %}',
-            'type': 'POST',
-            'data': {
-                'initial_token': $('#token').text(),
-                'url': url,
-                'your_img': img,
-                'author_id': author_id,
-                'name': name,
-                'username': username,
-                'cd': $('#inputcd').val(),
-                'sa': $('#inputsa').val(),
-                'cmp': $('#inputcmp').val(),
-                'hue': $('#inputhue').val(),
-                'edit': $('#inputedit').val(),
-                'nar': $('#inputnar').val(),
-            },
-            'dataType': 'json'
-        }).done(function(response) {
-            var toString = Object.prototype.toString;
-            console.log(url, img, response.m, toString.call(response.m));
-            if (response.m) {
-                // 連投を感知したらメッセージを挿入
-                let message = $('<p>', { html: `<h3>${response.m}</h3>`});
-                $('#fail').empty();
-                $('#fail').show();
-                $('#fail').append(message);
-            } else {
-                location.reload(true);
-            }
-        });
-    });
-}
-
 // サクセスメッセージ挿入
 if ("{{message}}" != "None") {
     let smes = $('<p>', { html: "<h3>{{message}}</h3>"});
@@ -182,7 +55,8 @@ if ("{{message}}" != "None") {
 
 // URL入力
 $('#tweet-link').focus();
-$('#reset').click( function() { // リセットイベント
+// リセットイベント
+$('#reset').click( function() { 
     $('#tweet-link').val("");
 });
 // 変更時自動で送信する
@@ -193,7 +67,7 @@ $('#tweet-form').on('submit', function(e) {
     e.preventDefault();
     $.ajax({ // ツイートリンクをmodify_tweet_linkに渡す
         'url': '{% url "ratingapp:modify" %}',
-        'type': 'POST',
+        'type': 'GET',
         'data': {
             'url': $('#tweet-link').val(),
         },
@@ -231,7 +105,7 @@ $('#tweet-form').on('submit', function(e) {
                     if (jqxhr) { return; } // 重複回避
                     jqxhr = $.ajax({
                         'url': '{% url "ratingapp:selected" %}',
-                        'type': 'POST',
+                        'type': 'GET',
                         'data': {'img': img},
                         'dataType': 'json'
                     })
@@ -240,13 +114,114 @@ $('#tweet-form').on('submit', function(e) {
                         f_bottom(img, url, author_id, name, username, avg);
                     });                       
                 });
-            } else { // ツイート画像が単数の場合
+            } else {
+                // ツイート画像が単数の場合
                 const img = response.your_img;
                 f_bottom(img, url, author_id, name, username, avg);               
             }
         }
     });
 });
+
+// 画像選択以後
+function f_bottom(img, url, author_id, name, username, avg) {
+    $('#include').show();
+    $('#fail').hide();
+    let image = $('<p>', { html: `<a data-lightbox="select-img" href="${img}"><image src="${img}"></a>`});
+    let userinfo = $('<p>', { html: `<a href="${url}">${name}(@${username})</a>` });
+    $('#fig').empty();
+    $('#fig').append(image, userinfo);
+    chart(avg); // チャート描画
+    let isnull = avg.some((val, idx, obj) => {
+        return val == null;
+    });
+    let iszero = avg.every((val, idx, obj) => {
+        return val == 0;
+    });
+    // 平均値0の場合チャートを隠す
+    if (isnull || iszero) {
+        let cmes = $('<h3>', { html: '評価数が基準以下です<br>Not enough posts!'});
+        $('.cover').empty();
+        $('.cover').show();
+        $('.cover').append(cmes);
+    } else { $('.cover').hide(); }
+    // 評価スライダーをチャートに反映
+    $('[name="myRange"]').on('input', () => {
+        let cd = $('#inputcd').val();
+        let sa = $('#inputsa').val();
+        let cmp = $('#inputcmp').val();
+        let hue = $('#inputhue').val();
+        let edit = $('#inputedit').val();
+        let nar = $('#inputnar').val();
+        if (data.length == 1) {
+            data.push({
+                type: 'scatterpolar',
+                r: [cd,sa,cmp,hue,edit,nar],
+                theta: categories,
+                fill: 'toself',
+                name: 'あなたの評価'
+            });
+        } else {
+            data.pop();
+            data.push({
+                type: 'scatterpolar',
+                r: [cd,sa,cmp,hue,edit,nar],
+                theta: categories,
+                fill: 'toself',
+                name: 'あなたの評価'
+            });            
+        }
+        Plotly.react(mainchart, data, layout, config);
+    });
+    $(function() { // 確認モーダル表示
+        $('.modal-open').on('click',function(){
+            $('.js-modal-2').fadeIn();
+            return false;
+        });
+        $('.js-modal-close-2').on('click',function(){
+            $('.js-modal-2').fadeOut();
+            return false;
+        });
+    });
+    var jqxhr;
+    // 評価を登録
+    $('#rating-submit').on('click', function(e) {
+        e.preventDefault();
+        if (jqxhr) { return; } // 重複回避
+        jqxhr = $.ajax({
+            // 評価値をpost_to_ratingに渡す
+            'url': '{% url "ratingapp:post" %}',
+            'type': 'GET',
+            'data': {
+                'initial_token': $('#token').text(),
+                'url': url,
+                'your_img': img,
+                'author_id': author_id,
+                'name': name,
+                'username': username,
+                'cd': $('#inputcd').val(),
+                'sa': $('#inputsa').val(),
+                'cmp': $('#inputcmp').val(),
+                'hue': $('#inputhue').val(),
+                'edit': $('#inputedit').val(),
+                'nar': $('#inputnar').val(),
+            },
+            'dataType': 'json'
+        }).done(function(response) {
+            console.log(`url: ${url}, img: ${img}, msg: ${response.m}`);
+            if (response.m) {
+                // 連投を感知したらメッセージを挿入
+                let message = $('<p>', { html: `<h3>${response.m}</h3>`});
+                $('#fail').empty();
+                $('#fail').show();
+                $('#fail').append(message);
+            } else {
+                window.location = '{% url "ratingapp:top" %}?msg=200';
+            }
+        });
+    });
+}
+
 
 // 項目別解説
 for (let i=1; i<=6; i++) {
