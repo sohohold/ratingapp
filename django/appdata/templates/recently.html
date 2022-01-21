@@ -1,0 +1,47 @@
+{% extends "application.html" %}
+{% block title %}最近の評価 | Twitterイラスト評価{% endblock %}
+
+{% block content %}
+
+<header>
+    <ul>
+        <li class="totop"><a href="{% url 'ratingapp:top' %}">TOP</a></li>
+        <li><a href="{% url 'ratingapp:about' %}">概要</a></li>
+        <li><a href="{% url 'ratingapp:recently' %}">最近の評価</a></li>
+    </ul>
+</header>
+<div class="mrg"></div>
+<p><h2>最近の評価</h2></p>
+<div id="recently" class="container">
+    {% autoescape off %}
+    {% for i,g,a in z %}
+        <li>
+            <div class="img-gr">
+                <p><a data-lightbox="recent-imgs" href="{{ i.media_url }}"><img src="{{ i.media_url }}"></a></p>
+                <p><a href="{{ i.url }}">@{{ i.user.username }}</a></p>
+            </div>
+            <div class="gr">
+                {{ g }}
+                <div class="cover" style="display:none;"></div>
+            </div>
+        </li>
+        <script>
+        // 集計値が基準以下のとき非表示
+        let isnull = {{ a }}.some((val, idx, obj) => {
+            return val == null;
+        });
+        let iszero = {{ a }}.every((val, idx, obj) => {
+            return val == 0;
+        });
+        if (isnull || iszero) {
+            let cmes = $('<h3>', { html: '評価数が基準以下です<br>Not enough posts!'});
+            $('.cover').empty();
+            $('.cover').show();
+            $('.cover').append(cmes);
+        }
+        </script>
+    {% endfor %}
+    {% endautoescape %}
+</div>
+
+{% endblock %}
