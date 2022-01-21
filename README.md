@@ -36,3 +36,14 @@ Twitterで日々投稿されるイラストを漫然と目を通すだけでは�
 これにより、イラストを見る側は大雑把な基準に頼ることなく、反省的にイラストを評価できると考えています。  
 一方クリエイター側にとっては、集計された評価データが提供されることで、そのイラストの長所と短所を  
 細分化された評価基準から把握し、今後の創作活動にフィードバックするための材料として活用できる展開も想定しえます。  
+
+## ER図
+![ratingapp-er](https://user-images.githubusercontent.com/94224267/150514464-33aadcb7-9780-4691-a6b6-e761f9edaac9.jpg)  
+
+## フローチャート
+![ratingapp-flow](https://user-images.githubusercontent.com/94224267/150514501-fb63fe26-1778-4f80-aaf2-582853b9b22e.jpg)  
+
+## AWS構成図
+![ratingapp-aws](https://user-images.githubusercontent.com/94224267/150514512-337c68e4-18a4-4c9c-abd4-65bb64ebf8e8.jpg)  
+
+
