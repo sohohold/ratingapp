@@ -1,49 +1,36 @@
-# ratingapp
-## 概要
-Twitterにアップされたイラストを項目別に６段階で評価して、集計データをレーダーチャート化するサイトです。  
-諸項目は以下の6つです。  
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-1. キャラクターデザイン  
-1. デッサン力  
-1. 構図・構成  
-1. 色彩・色の配置  
-1. 演出・フォトジェニック  
-1. 世界観・物語性  
+## Getting Started
 
-## 使い方
-* あらかじめTwitter上で**ツイートのリンク**をコピーしてください。  
-ブラウザのアドレスバーからか、もしくはツイート本文右下にある上矢印アイコンから「ツイートのリンクをコピー」を選択することでコピーできます。  
-**画像アドレス（`pbs.twimg.com`から始まるURL）は無効**です。  
-* 本サイトの検索ボックスにコピーしたリンクを貼り付けて、しばらく待つか検索ボタンを選択してください。  
-評価したいツイートに2つ以上の画像メディアが含まれている場合は画像を１つに限定します。選択画面が表示されたら評価する画像を選択してOKボタンをクリックします。  
-* 評価は０～５の６段階で行います。  
-数値と評価は比例していますので、良いと思えば高い数値を入力してください。  
-なお初期値は5に設定されているため注意してください。  
-項目にカーソルを合わせるとその項目についての解説が見ることができます。  
-全項目に数値を入力したあとOKボタンを選択すればデータが送信されます。  
+First, run the development server:
 
-## 想定されたユーザー
-イラストについて、Likeボタン・Retweetボタン以外の手段によって分析的に評価を下したいユーザーを対象にしています。  
-今後の展開によっては、クリエイター自身がその評価を参照できる環境ができるかもしれません。  
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-## ユーザーが持つ課題
-Twitterで日々投稿されるイラストを漫然と目を通すだけではなく、より詳細に評価したい。  
-あるいは、イラストについて蓄積された諸評価を総合的なデータとして表示する統一化された場が欲しいという課題を仮定しています。  
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## 課題の解決方法（このサービスでどうやって解決するか）
-当サービスは、LikeあるいはRetweetといった手短で簡略なリアクションの共有ではなく、  
-より詳細で分析的な評価をリアクションとしてユーザーが登録・蓄積・アベレージ化し、ユーザーに共有すること。  
-これにより、イラストを見る側は大雑把な基準に頼ることなく、反省的にイラストを評価できると考えています。  
-一方クリエイター側にとっては、集計された評価データが提供されることで、そのイラストの長所と短所を  
-細分化された評価基準から把握し、今後の創作活動にフィードバックするための材料として活用できる展開も想定しえます。  
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## ER図
-![ratingapp-er](https://user-images.githubusercontent.com/94224267/150514464-33aadcb7-9780-4691-a6b6-e761f9edaac9.jpg)  
+This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## フローチャート
-![ratingapp-flow](https://user-images.githubusercontent.com/94224267/150514501-fb63fe26-1778-4f80-aaf2-582853b9b22e.jpg)  
+## Learn More
 
-## AWS構成図
-![ratingapp-aws](https://user-images.githubusercontent.com/94224267/150514512-337c68e4-18a4-4c9c-abd4-65bb64ebf8e8.jpg)  
+To learn more about Next.js, take a look at the following resources:
 
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
