@@ -1,49 +1,40 @@
 'use client'
 
-import React, { useState } from 'react';
-import {
-  Card,
-  CardBody,
-  Button,
-  Input,
-} from '@nextui-org/react';
-import LookupTweet from './twitter-api'
+import { Suspense, useState } from "react";
+// import parse from "html-react-parser";
+import { PostForm } from "@/components/forms";
+import { Posts, PostsPlaceholder } from "@/components/posts";
+import Loading from "./loading";
+import { Card, CardHeader, CardBody } from "@nextui-org/card";
 
-const TweetImageFetcher = () => {
-  const [tweetUrl, setTweetUrl] = useState('');
-  const [tweetId, setTweetId] = useState('');
-  const [error, setError] = useState('');
-
-  const fetchImage = async () => {
-    setError('');
-    try {
-      // Extract Tweet ID from URL
-      const _id = tweetUrl.split('/').pop() as string
-      setTweetId(_id);
-      return tweetId
-    } catch (err) {
-      setError('Failed to fetch image. Please try again.');
-    }
-  };
+const Page = () => {
 
   return (
-    <div className='flex min-h-full flex-col items-center justify-center p-12 gap-1'>
-      <div className='flex flex-row gap-2'>
-        <Input
-          label='Tweet URL' size='lg' color="primary"
-          onChange={(event) => setTweetUrl(event.target.value)} />
-        <Button color='primary' onClick={fetchImage}>GET</Button>
+    <main className="flex min-h-screen flex-col items-center space-y-5 p-5 md:p-24">
+      <h2>Rating</h2>
+      <PostForm />
+      <div className="grid gap-4 max-w-lg w-full">
+        <div
+          className="bg-white shadow-md rounded-md p-4 flex justify-between items-center"
+        >
+          <Card>
+            <CardHeader className="text-lg font-bold">
+            <small className="text-default-500">Post</small>
+            </CardHeader>
+            <CardBody className="text-gray-500">
+              <Suspense fallback={<Loading />}>
+                <Posts />
+              </Suspense>
+            </CardBody>
+          </Card>
+          <Card>
+            <CardHeader className="text-lg font-bold">Average</CardHeader>
+            <CardBody className="text-gray-500">TBD</CardBody>
+          </Card>
+        </div>
       </div>
-      {tweetId !== '' && <LookupTweet tweetId={tweetId} />}
-      {error && (
-        <Card>
-          <CardBody>
-            {error}
-          </CardBody>
-        </Card>
-      )}
-    </div>
+    </main>
   );
 };
 
-export default TweetImageFetcher;
+export default Page;
