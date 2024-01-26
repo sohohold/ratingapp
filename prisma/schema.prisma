@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Author {
@@ -15,18 +16,19 @@ model Author {
   username  String   @unique
   posts     Post[]
   ratings   Rating[]
-  createdAt DateTime
-  updatedAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 model Post {
   id         Int      @id @default(autoincrement())
   url        String   @unique
+  embedHtml  String
   author     Author   @relation(fields: [authorName], references: [username])
   authorName String
   Rating     Rating[]
-  createdAt  DateTime
-  updatedAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
 }
 
 model Rating {

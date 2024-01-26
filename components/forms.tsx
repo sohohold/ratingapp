@@ -1,42 +1,44 @@
-'use client'
+'use client';
 
-import { useRef } from "react";
-import { useFormStatus } from "react-dom";
-import { useRouter } from "next/navigation";
+import { useRef } from 'react';
+import { useFormStatus } from 'react-dom';
+import { useRouter } from 'next/navigation';
+import { Input } from '@nextui-org/input';
+import { Button } from '@nextui-org/button';
+import { CircularProgress } from '@nextui-org/react';
 
-import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/button";
-import { setEmbedCookies, submit } from "@/lib/actions";
-import { LoadingDots } from "./loading-dots";
+import { submit } from '@/lib/actions';
 
-
-export const PostForm = () => {
+export const ActionsForm = () => {
   const formRef = useRef<HTMLFormElement>(null);
   const router = useRouter();
+  const clearClick = () => formRef.current?.reset();
 
   return (
     <form
       ref={formRef}
-      action={(data) =>
-        submit(data).then((res) => {
-          setEmbedCookies(res);
-          formRef.current?.reset();
+      action={(data) => {
+        submit(data).then(() => {
           router.refresh();
-        })
-      }
-      className="flex flex-col bg-white shadow-md rounded-md p-4 w-full max-w-lg space-y-4"
+        });
+      }}
     >
-      <Input
-        type="text"
-        name="url"
-        placeholder="Enter URL you wish to evaluate"
-        required
-        isClearable
-      />
-      <FormButton />
+      <div className="flex flex-row gap-2 items-center">
+        <Input
+          type='url'
+          name="url"
+          label="Enter URL you wish to evaluate"
+          size="sm"
+          variant="bordered"
+          isClearable
+          onClear={clearClick}
+          className="shrink md:w-96"
+        />
+        <FormButton />
+      </div>
     </form>
   );
-}
+};
 
 const FormButton = () => {
   const { pending } = useFormStatus();
@@ -45,7 +47,7 @@ const FormButton = () => {
       type="submit"
       disabled={pending}
     >
-      {pending ? <LoadingDots className="" /> : <p>Submit</p>}
+      {pending ? <CircularProgress aria-label='Loading...' size='sm' /> : <p>Submit</p>}
     </Button>
   );
 };

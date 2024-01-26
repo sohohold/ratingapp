@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Script from 'next/script';
 import './globals.css'
 import { Providers } from "./providers";
 
@@ -18,7 +17,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className='dark'>
-      <Script src='https://platform.twitter.com/widgets.js' />
       <body className={inter.className}>
         <Providers>
           {children}
